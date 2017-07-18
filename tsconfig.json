@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "target": "es2015",
+        "module": "es6",
+        "moduleResolution": "node",
+        "allowJs": true,
+        // "strict": true,
+        "jsx": "react",
+        "typeRoots": [
+            "./libs/definitions/**"
+        ],
+        "lib": [
+            "es2017",
+            "dom"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "**/*.test*.*",
+        "doc"
+    ]
+}

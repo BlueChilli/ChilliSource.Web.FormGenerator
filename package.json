@@ -1,0 +1,58 @@
+{
+  "name": "cs.generators",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "start": "node server.js",
+    "build": "webpack --config webpack.build.config.js -p"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueChilli/Chillisource.Web.FormGenerator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BlueChilli/Chillisource.Web.FormGenerator/issues"
+  },
+  "homepage": "https://github.com/BlueChilli/Chillisource.Web.FormGenerator#readme",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "cs.forms": "BlueChilli/ChilliSource.Web.Forms",
+    "cs.core": "BlueChilli/ChilliSource.Web.Core",
+    "immutable": "^3.8.1",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.5.10",
+    "react": "^15.3.2",
+    "react-dom": "^15.2.1",
+    "react-redux": "^5.0.5",
+    "recompose": "^0.23.5",
+    "redux": "^3.7.1"
+  },
+  "devDependencies": {
+    "@types/classnames": "0.0.32",
+    "@types/lodash": "^4.14.54",
+    "@types/node": "^8.0.7",
+    "@types/react": "^15.0.27",
+    "@types/react-dom": "^15.5.0",
+    "@types/react-redux": "^4.4.45",
+    "@types/recompose": "^0.23.1",
+    "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
+    "autoprefixer": "^7.1.1",
+    "awesome-typescript-loader": "^3.2.1",
+    "clean-webpack-plugin": "^0.1.16",
+    "config": "^1.26.1",
+    "express": "^4.15.3",
+    "html-webpack-plugin": "^2.29.0",
+    "open": "0.0.5",
+    "redux-thunk": "^2.2.0",
+    "typescript": "^2.4.1",
+    "webpack": "^3.0.0",
+    "webpack-dev-middleware": "^1.11.0",
+    "webpack-hot-middleware": "^2.18.1"
+  }
+}
