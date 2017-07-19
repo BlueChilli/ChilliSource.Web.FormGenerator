@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 const path = require( 'path');
 const open = require('open');
 const express = require('express');

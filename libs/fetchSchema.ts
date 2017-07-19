@@ -1,4 +1,7 @@
-import {Map} from "immutable";
+import {Map, Iterable} from "immutable";
+import {AxiosInstance, AxiosPromise} from "axios";
+
+export type swaggerApiRequest = (data?:Map<string, any>, params?:Map<string, any>, queryArgs?:Map<string, any>) => AxiosPromise;
 
 
 const insertQueryArguments = (queryArgs:Map<string, any>, path:string, index:number):string => {
@@ -10,11 +13,11 @@ const insertQueryArguments = (queryArgs:Map<string, any>, path:string, index:num
 };
 
 
-export default (ajax, globalSwaggerLocation:Object, baseURL:string, onComplete: () => undefined) => {
 
+
+export default (ajax: AxiosInstance, globalSwaggerLocation:Object, baseURL:string, onComplete: () => void) => {
   ajax.get(`${baseURL}/swagger/docs/v1?flatten=true`).then((res:{data:Map<string, any>}) => {
     const paths:Map<string, any> = res.data.get('paths');
-    // window.client = paths.filter((methods, path) => path.match('/api/v1/'))
     globalSwaggerLocation = paths.mapEntries(([path, methods]:[string, Map<string, any>]) => {
         return [path.replace('/api/v1/', ''), methods.mapEntries(([method, info]:[string, Map<string, any>]) => {
           return [
@@ -26,7 +29,7 @@ export default (ajax, globalSwaggerLocation:Object, baseURL:string, onComplete: 
                 method,
                 url: baseURL + pathWithArgs,
                 data,
-                params
+                params: Iterable.isIterable(params) ? params.toJS() : params
               });
             })
           ]

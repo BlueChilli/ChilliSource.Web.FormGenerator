@@ -4,14 +4,14 @@ import { Map, List, Set, fromJS, Iterable } from "immutable";
 import { connect } from "react-redux";
 import {Dispatch} from "redux";
 import Thunk from "redux-thunk";
-import { submitGeneratedForm, OnSubmitSuccess } from "./actions";
+import { submitGeneratedForm, OnSubmitSuccess, OnSubmitStart } from "./actions";
 import {FormOptionalProps} from "cs.forms"
-import FormSubmit from "../FormSubmit/FormSubmit";
 import {camelCase, upperFirst } from "lodash";
 
-import {BaseAction, BaseReactProps, ShallowCompare} from "../../libs/types";
+import {PossibleValues} from "cs.forms";
+import {BaseReactProps} from "cs.core"
 
-import {getSwaggerModel, getSwaggerParamaters, getPropertiesByDataFormat} from "../../Helpers/swaggerHelpers";
+import {getSwaggerModel, getSwaggerParamaters, getPropertiesByDataFormat} from "../../libs/swaggerHelpers";
 
 import { withProps, defaultProps, compose } from "recompose";
 
@@ -28,17 +28,21 @@ export interface FormGeneratorProps extends FormOptionalProps<SubmitGeneratedFor
     onSubmit?: (any, ShallowCompare, SubmitGeneratedForm) => undefined,
     /** Text to display on the submit button */
     buttonText?: string
+    /** Executed on before any ajax requests are made */
+    onSubmitStart?: OnSubmitStart,
     /** Executed on successfully adding the the form data to both server and application state */
     onSubmitSuccess?: OnSubmitSuccess,
     /** Executed on a failed attempt to adding the the form data to server and application state */
     onSubmitError?: OnSubmitSuccess,
+     /** Executed after onSubmitError and onSubmitSuccess are fired */
+    onSubmitEndAll?: OnSubmitStart,
     /** A map that accepts to properties rename and transform. Rename is a string that replaces the key of the data
      * transform is a function that returns transformed data */
-    mapInputs?: (ShallowCompare) => ShallowCompare,
+    mapInputs?: (ShallowCompare) => PossibleValues,
     /** Id of the data inside apiType you wish to edit */
     editId?: number,
     /** Arguments to merge into the form as default values */
-    editArgs?: Map<string, ShallowCompare>,
+    editArgs?: Map<string, PossibleValues>,
     /** Removes fields not avaliable to the user based on their role */
     roles?: List<string>,
     /** Display avaliable fields */
@@ -46,11 +50,12 @@ export interface FormGeneratorProps extends FormOptionalProps<SubmitGeneratedFor
     /** fields to be rendered by the form generator -- Mainly internal usage */
     properties?: List<any> | Map<string, any>,
     /** Type of request for the FormGenerator to make -- default is 'post' */
-    formMethod?: string
+    formMethod?: string,
+    FormComponent?: React.ComponentType<{stateName?: string, buttonText?: string, onSubmit?: (e, formData) => void}>
 }
 
 interface ConnectFormGenProps extends FormGeneratorProps{
-  editArgs: Map<string, ShallowCompare>,
+  editArgs: Map<string, PossibleValues>,
   dispatch: (dispatch) => undefined
 }
 
@@ -94,11 +99,11 @@ class FormGenerator extends React.Component<WithPropsFormGen, {}>{
   }
 
   render() {
-    const {stateName, onSubmitSuccess, submitGeneratedForm, children, properties, buttonText = "Submit", onSubmit, formMethod, ...safeProps} = this.props;
+    const {stateName, onSubmitSuccess, submitGeneratedForm, children, properties, buttonText = "Submit", onSubmit, formMethod, FormComponent, ...safeProps} = this.props;
     return (
-      <FormSubmit stateName={ safeProps.name } buttonText={ buttonText } onSubmit={ this.handleSubmit } {...safeProps}>
+      <FormComponent stateName={ safeProps.name } buttonText={ buttonText } onSubmit={ this.handleSubmit } {...safeProps}>
         { children }
-      </FormSubmit>
+      </FormComponent>
       );
   }
 };
@@ -191,7 +196,7 @@ export default compose<WithPropsFormGen, FormGeneratorProps>(
     }
   }),
   withProps((props:WithPropsBaseSwaggerInfo) => {
-    const {dispatch, apiType, stateName, onSubmitSuccess, onSubmitError, debug, properties, baseInfo, parameters, apiVerb, formMethod} = props;
+    const {dispatch, apiType, stateName, onSubmitStart, onSubmitSuccess, onSubmitError, onSubmitEndAll, debug, properties, baseInfo, parameters, apiVerb, formMethod} = props;
     if(debug){
       console.log(properties.toJS());
     }
@@ -207,7 +212,7 @@ export default compose<WithPropsFormGen, FormGeneratorProps>(
       properties: createControlsEdit(roleSafeProperties, mappedEditArgs),
       encType: baseInfo.getIn(['consumes', 0]),
       name,
-      submitGeneratedForm: (formData) => dispatch(submitGeneratedForm(name, formData, api, apiType, stateName, onSubmitSuccess, onSubmitError))
+      submitGeneratedForm: (formData) => dispatch(submitGeneratedForm(name, formData, api, apiType, stateName, onSubmitStart, onSubmitSuccess, onSubmitError, onSubmitEndAll))
     };
   })
 )(FormGenerator)

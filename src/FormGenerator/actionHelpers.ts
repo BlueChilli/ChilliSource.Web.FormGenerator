@@ -2,12 +2,11 @@
 import { Map } from 'immutable';
 import { Dispatch } from 'react-redux';
 
-/** Actions */
-import { showAlert } from '../../exports'
-
 /** Helpers */
 import { getFirstPath } from '../CrudHelpers/Helpers/stateHelpers';
-import { apiResponseDataMap, BaseAction, PostAction, swaggerApi, apiRequestDataMap, apiPathArgs } from '../../libs/types';
+import { FSA } from 'cs.core';
+import {swaggerApiRequest} from "../../libs/fetchSchema";
+
 
 /**
  * Determines the type of action to be fired
@@ -30,7 +29,7 @@ const getPostActionType = (data, stateName: string): string => {
  * @param stateName The namespace under which the data exists
  * @param promise ASK SHANE
  */
-const getPostAction = (actionType: string, stateName: string, promise: Promise<apiResponseDataMap>): PostAction => {
+const getPostAction = (actionType: string, stateName: string, promise: Promise<Map<string, any>>): FSA<{promise: Promise<Map<string, any>>}, string> => {
   return {
     type: actionType,
     payload: {
@@ -51,14 +50,13 @@ const getPostAction = (actionType: string, stateName: string, promise: Promise<a
  * @param params 
  * @param pathArgs 
  */
-export const dispatchPostAction = (dispatch: Dispatch<BaseAction>, api: swaggerApi, data: apiRequestDataMap, params?: Object, pathArgs?: apiPathArgs) => (stateName: string): Promise<apiResponseDataMap> => {
-  return api(data, params, pathArgs).then(({ data }) => {
+export const dispatchPostAction = (dispatch: Dispatch<BaseAction>, api: swaggerApiRequest, data: Map<string, any>, params?: Map<string, any>, pathArgs?: Map<string, any>) => (stateName: string): Promise<Map<string, any>> => {
+  return api(data, params, pathArgs).then(({data}) => {
     const actionType = getPostActionType(data, stateName);
     dispatch(getPostAction(actionType, stateName, Promise.resolve(data)));
     return data;
   }).catch(err => {
     const actionType = getPostActionType(err.data, stateName);
-    dispatch(showAlert('error', 'Form failed to submit', err.data.get('errors')));
     dispatch(getPostAction(actionType, stateName, Promise.reject(err.data)));
     return Promise.reject(err);
   })

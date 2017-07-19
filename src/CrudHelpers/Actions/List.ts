@@ -1,13 +1,12 @@
 import {Map} from "immutable";
 import {splitPath, getTopStatePath, getFirstPath} from "../Helpers/stateHelpers";
-import {PromiseAction, BaseAction, StateNameAction, swaggerApi} from "../../../types"
+import {swaggerApiRequest} from "../../../libs/fetchSchema"
+import {FSA} from "cs.core"
 
 
-export interface SetEditListItem extends StateNameAction {
-  payload: string|number
-}
+export interface SetEditListItemAction extends FSA<string|number, string> {}
 
-export const setEditListItem = (stateName:string, id:string|number) => {
+export const setEditListItem = (stateName:string, id:string|number):SetEditListItemAction => {
   return {
     type: `SET_${stateName}_EDIT_LIST_ITEM`,
     payload: id,
@@ -17,18 +16,18 @@ export const setEditListItem = (stateName:string, id:string|number) => {
   }
 };
 
-export interface ResetEditListItem extends BaseAction {}
+export interface ResetEditListItemAction extends FSA<undefined, string> {}
 
-export const resetEditListItem = (stateName:string) => {
+export const resetEditListItem = (stateName:string):ResetEditListItemAction => {
   return {
     type: `RESET_${stateName}_EDIT_LIST_ITEM`
   }
 };
 
 
-export interface DeleteListItem extends StateNameAction, PromiseAction {}
+export interface DeleteListItemAction extends FSA<{promise: Promise<string|number>}, string> {}
 
-export const deleteListItem = (stateName:string, id:string|number, api:swaggerApi) => {
+export const deleteListItem = (stateName:string, id:string|number, api:swaggerApiRequest):DeleteListItemAction => {
   return {
     type: `DELETE_${stateName}`,
     payload: {

@@ -1,11 +1,12 @@
 import React from "react";
 import {Map} from "immutable";
 
-import {BaseReactProps, swaggerApi} from "../../libs/types";
+import {BaseReactProps} from "cs.core";
+import {swaggerApiRequest} from "../../libs/fetchSchema"
 
 interface Props extends BaseReactProps {
   children?: React.ReactElement<any>,
-  api: swaggerApi
+  api: swaggerApiRequest
 }
 
 interface State {

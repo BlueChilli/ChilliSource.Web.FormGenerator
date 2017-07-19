@@ -3,7 +3,7 @@ import {List} from "immutable";
 import {connect} from "react-redux";
 import {setEditListItem, deleteListItem, getNextPage, resetEditListItem} from "./Actions/List"
 import {CrudHelperHOC, PassedDownCrudHelperWrapperProps, CrudHelperInjectedProps} from "./CrudHelperWrapper"
-import {BaseReactProps, ShallowCompare} from "../../libs/types"
+import {BaseReactProps} from "cs.core";
 import {omit} from "lodash";
 
 declare var window;

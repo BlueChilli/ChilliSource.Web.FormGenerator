@@ -1,4 +1,5 @@
 var autoprefixer = require('autoprefixer');
+var {values} = require('lodash');
 
 var rulesObj = {
   javascript: {
@@ -37,4 +38,4 @@ var rulesObj = {
 }
 
 
-module.exports = Object.values(rulesObj);
+module.exports = values(rulesObj);

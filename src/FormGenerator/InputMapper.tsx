@@ -2,13 +2,13 @@ import React, {cloneElement} from 'react';
 import PropTypes from 'prop-types';
 import {Map, List, Iterable} from "immutable";
 import classnames from "classnames";
-import {Input, CheckBox, TextArea, Radio, Select, Validate, DropZone, Number, DatePicker, InputUnionProps} from "cs.forms";
-import {validationsAvailable} from "../../Helpers/validate";
+import {Input, CheckBox, TextArea, Radio, Select, Validate, DropZone, Number, DatePicker, InputUnionProps, validationsAvailable} from "cs.forms";
 import {getContext, withProps, compose} from "recompose";
 import {isUndefined, size} from "lodash";
 import GetAPIforRender from "./GetApiForRender";
 
-import {BaseReactProps, swaggerApi} from "../../libs/types";
+import {BaseReactProps} from "cs.core";
+import {swaggerApiRequest} from "../../libs/fetchSchema"
 
 
 interface GetContextProps extends BaseReactProps {
@@ -77,7 +77,7 @@ class InputMapper extends React.Component<(InputMapperProps & InputUnionProps) &
     const type = inputAttributes.get('type','');
     if (this.props.component) {
       if (inputAttributes.hasIn(['items', 'x-blue-ApiResourceReference', 'api']) || inputAttributes.has('x-blue-ApiResourceReference')) {
-        const api:swaggerApi = inputAttributes.getIn(['items', 'x-blue-ApiResourceReference', 'api'], inputAttributes.get('x-blue-ApiResourceReference'));
+        const api:swaggerApiRequest = inputAttributes.getIn(['items', 'x-blue-ApiResourceReference', 'api'], inputAttributes.get('x-blue-ApiResourceReference'));
         return (
           <GetAPIforRender api={api}>
             {cloneElement(this.props.component, {
@@ -123,7 +123,7 @@ class InputMapper extends React.Component<(InputMapperProps & InputUnionProps) &
     } else if (type === "number") {
       return <Number {...inputAttributes.toJS()} />
     } else if (type === 'array') {
-      const api:swaggerApi = inputAttributes.getIn(['items', 'x-blue-ApiResourceReference', 'api']);
+      const api:swaggerApiRequest = inputAttributes.getIn(['items', 'x-blue-ApiResourceReference', 'api']);
       if (!isUndefined(api)) {
         return (
           <GetAPIforRender api={api}>

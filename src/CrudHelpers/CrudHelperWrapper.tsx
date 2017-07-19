@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {getData} from "./Actions/CrudHelpers"
 import {getFirstPath, getTopStatePath} from "./Helpers/stateHelpers"
 import {createSpecificShallowEqual} from "cs.core"
-import {BaseReactProps, apiPathArgs, apiParamArgs} from "../../libs/types";
+import {BaseReactProps} from "cs.core";
 import {omit} from "lodash";
 
 
@@ -33,9 +33,9 @@ interface OwnProps extends BaseReactProps {
     /** Api verb to fetch the data from, the default: 'Query' */
     apiVerb?: string,
     /** Params to be passed to the api request passed in the body of the request */
-    params?: apiParamArgs,
+    params?: Map<string, any>,
     /** Path arguments to be passed to the api request injected into the path */
-    pathArgs?: apiPathArgs
+    pathArgs?:  Map<string, any>
 }
 
 type CrudHelperCreatedChild<T> = ComponentClass<CrudHelperInjectedProps & T> 

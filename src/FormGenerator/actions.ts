@@ -3,12 +3,12 @@ import { Map } from 'immutable';
 
 /** Helpers */
 import { getFirstPath } from '../CrudHelpers/Helpers/stateHelpers';
-import { startSpinner, endSpinner } from '../../Components/ButtonSpinner/Action/ButtonSpinner';
-import { apiRequestDataMap, apiResponseDataMap, swaggerApi } from '../../libs/types';
 import { dispatchPostAction } from './actionHelpers';
+import {swaggerApiRequest} from "../../libs/fetchSchema"
 
 
-export type OnSubmitSuccess = (response?: apiResponseDataMap, request?: apiRequestDataMap) => void;
+export type OnSubmitSuccess = (response?: Map<string, any>, request?: Map<string, any>) => void;
+export type OnSubmitStart = (formData?: Map<string, any>,) => void;
 
 /**
  * Submits a form, shows an alert if required and fires the appropriate action
@@ -21,9 +21,10 @@ export type OnSubmitSuccess = (response?: apiResponseDataMap, request?: apiReque
  * @param onSubmitSuccess 
  * @param onSubmitError 
  */
-export const submitGeneratedForm = (formName: string, formData: apiRequestDataMap, api: swaggerApi, apiType, stateName: string, onSubmitSuccess: OnSubmitSuccess, onSubmitError: OnSubmitSuccess) => {
+export const submitGeneratedForm = (formName: string, formData: Map<string, any>, api: swaggerApiRequest, apiType:string, stateName: string, onSubmitStart:OnSubmitStart, onSubmitSuccess: OnSubmitSuccess, onSubmitError: OnSubmitSuccess, onSubmitEndAll:OnSubmitStart) => {
   return dispatch => {
-    dispatch(startSpinner(formName));
+    // dispatch(startSpinner(formName));
+    onSubmitStart(formData);
     dispatchPostAction(dispatch, api, formData)(stateName).then((data) => {
       if (onSubmitSuccess) {
         onSubmitSuccess(data, formData);
@@ -31,11 +32,12 @@ export const submitGeneratedForm = (formName: string, formData: apiRequestDataMa
       return data;
     }).catch((err) => {
       if (onSubmitError) {
+        // dispatch(showAlert('error', 'Form failed to submit', err.data.get('errors')));
         onSubmitError(err, formData);
       }
       return err;
     }).then(() => {
-      dispatch(endSpinner(formName));
+      onSubmitEndAll(formData);
     });
   }
 };
