@@ -28,7 +28,7 @@ app.use(webpackMiddleware(compiler, serverOptions));
 app.use(webpackHotMiddleware(compiler));
 
 app.get('*', function response(req, res) {
-  res.sendFile(path.join(__dirname, 'app/index.dev.html'));
+  res.sendFile(path.join(__dirname, 'app/index.html'));
 });
 
 let key = fs.readFileSync('/SSL/bluechilli.com.key');

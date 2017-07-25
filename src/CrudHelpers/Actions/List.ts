@@ -1,5 +1,5 @@
 import {Map} from "immutable";
-import {splitPath, getTopStatePath, getFirstPath} from "../Helpers/stateHelpers";
+import {splitPath, getTopStatePath, getFirstPath} from "../../../libs/stateHelpers";
 import {swaggerApiRequest} from "../../../libs/fetchSchema"
 import {FSA} from "cs.core"
 

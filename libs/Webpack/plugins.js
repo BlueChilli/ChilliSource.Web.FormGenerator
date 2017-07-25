@@ -3,6 +3,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
 var {CheckerPlugin} = require('awesome-typescript-loader');
+var path = require("path");
 
 const prodPlugins = [
   new CleanWebpackPlugin(['build/*'], {
@@ -24,6 +25,7 @@ const getDefaultPlugins = (executionEnvironment, bugherd, heap, title, mixpanel)
   return [
     new NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
+      template: path.join(__dirname, "index.html"),
       inject: 'body',
     }),
     new ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),

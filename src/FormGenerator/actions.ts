@@ -2,7 +2,7 @@
 import { Map } from 'immutable';
 
 /** Helpers */
-import { getFirstPath } from '../CrudHelpers/Helpers/stateHelpers';
+import { getFirstPath } from '../../libs/stateHelpers';
 import { dispatchPostAction } from './actionHelpers';
 import {swaggerApiRequest} from "../../libs/fetchSchema"
 
@@ -21,23 +21,25 @@ export type OnSubmitStart = (formData?: Map<string, any>,) => void;
  * @param onSubmitSuccess 
  * @param onSubmitError 
  */
-export const submitGeneratedForm = (formName: string, formData: Map<string, any>, api: swaggerApiRequest, apiType:string, stateName: string, onSubmitStart:OnSubmitStart, onSubmitSuccess: OnSubmitSuccess, onSubmitError: OnSubmitSuccess, onSubmitEndAll:OnSubmitStart) => {
-  return dispatch => {
+export const submitGeneratedForm = (dispatch, formName: string, formData: Map<string, any>, api: swaggerApiRequest, apiType:string, stateName: string, onSubmitStart:OnSubmitStart, onSubmitSuccess: OnSubmitSuccess, onSubmitError: OnSubmitSuccess, onSubmitEndAll:OnSubmitStart) => {
     // dispatch(startSpinner(formName));
-    onSubmitStart(formData);
+    if (typeof onSubmitStart === 'function') {
+      onSubmitStart(formData);
+    }
     dispatchPostAction(dispatch, api, formData)(stateName).then((data) => {
-      if (onSubmitSuccess) {
+      if (typeof onSubmitSuccess === 'function') {
         onSubmitSuccess(data, formData);
       }
       return data;
     }).catch((err) => {
-      if (onSubmitError) {
+      if (typeof onSubmitError === 'function') {
         // dispatch(showAlert('error', 'Form failed to submit', err.data.get('errors')));
         onSubmitError(err, formData);
       }
       return err;
     }).then(() => {
-      onSubmitEndAll(formData);
+       if (typeof onSubmitEndAll === 'function') {
+        onSubmitEndAll(formData);
+      }
     });
-  }
 };

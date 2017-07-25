@@ -1,4 +1,4 @@
-import {Map, Iterable} from "immutable";
+import {Map, Iterable, Seq} from "immutable";
 import {AxiosInstance, AxiosPromise} from "axios";
 
 export type swaggerApiRequest = (data?:Map<string, any>, params?:Map<string, any>, queryArgs?:Map<string, any>) => AxiosPromise;
@@ -15,10 +15,10 @@ const insertQueryArguments = (queryArgs:Map<string, any>, path:string, index:num
 
 
 
-export default (ajax: AxiosInstance, globalSwaggerLocation:Object, baseURL:string, onComplete: () => void) => {
+export default (ajax: AxiosInstance, baseURL:string, onComplete: (schema:Seq.Keyed<any, Iterable<any, any>>) => void) => {
   ajax.get(`${baseURL}/swagger/docs/v1?flatten=true`).then((res:{data:Map<string, any>}) => {
     const paths:Map<string, any> = res.data.get('paths');
-    globalSwaggerLocation = paths.mapEntries(([path, methods]:[string, Map<string, any>]) => {
+    const schema = paths.mapEntries(([path, methods]:[string, Map<string, any>]) => {
         return [path.replace('/api/v1/', ''), methods.mapEntries(([method, info]:[string, Map<string, any>]) => {
           return [
             info.get('operationId'),
@@ -36,7 +36,7 @@ export default (ajax: AxiosInstance, globalSwaggerLocation:Object, baseURL:strin
         })];
       }
     ).flatten(1).groupBy(value => value.getIn(['tags', 0]));
-    onComplete();
+    onComplete(schema);
   });
 }
 

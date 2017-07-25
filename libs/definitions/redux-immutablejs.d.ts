@@ -17,5 +17,6 @@ interface Reducers<TState, TPayload> {
 
 declare module "redux-immutablejs" {
   export function createReducer<TState, TPayload>(initialState: TState, reducer: Reducers<TState, TPayload>): any;
+  export function combineReducers (args): any
 }
 

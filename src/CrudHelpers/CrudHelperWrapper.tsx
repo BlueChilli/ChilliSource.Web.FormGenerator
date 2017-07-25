@@ -3,7 +3,7 @@ import {Map, List, Iterable} from "immutable";
 import {isUndefined} from "lodash";
 import {connect} from "react-redux";
 import {getData} from "./Actions/CrudHelpers"
-import {getFirstPath, getTopStatePath} from "./Helpers/stateHelpers"
+import {getFirstPath, getTopStatePath} from "../../libs/stateHelpers"
 import {createSpecificShallowEqual} from "cs.core"
 import {BaseReactProps} from "cs.core";
 import {omit} from "lodash";

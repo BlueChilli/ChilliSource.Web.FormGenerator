@@ -3,7 +3,6 @@ import {Reducer, Action} from "redux";
 import {OrderedMap, Map, List} from "immutable";
 import {SetEditListItemAction, DeleteListItemAction} from "../Actions/List"
 // import {ResolvedPromiseAction, StateNameAction} from "../../../libs/types"
-import {DispatchedGetActionResolved} from "../Helpers/actionHelpers";
 
 type State = Map<string, any>
 
@@ -26,7 +25,7 @@ const convertIdKeyedMap = (data = Map<string, Map<string, any>>({})) => {
   });
 };
 
-const getPaginatedResolution = (state:State, action:DispatchedGetActionResolved) => {
+const getPaginatedResolution = (state:State, action) => {
   const {payload}:{payload: Map<string, any>} = action;
   const {stateName} = action.meta;
   return state.updateIn([stateName], OrderedMap(), (currentState:OrderedMap<string, any>) => {
@@ -40,7 +39,7 @@ const getPaginatedResolution = (state:State, action:DispatchedGetActionResolved)
   });
 };
 
-const filterPaginatedResolution = (state:State, action:DispatchedGetActionResolved) => {
+const filterPaginatedResolution = (state:State, action) => {
   const {payload} = action;
   const {stateName} = action.meta;
   const keyedPayload = payload.update('data', Map(), (data) => Map(convertIdKeyedMap(data)))
@@ -48,13 +47,13 @@ const filterPaginatedResolution = (state:State, action:DispatchedGetActionResolv
 };
 
 
-const getSingleResolution = (state:State, action:DispatchedGetActionResolved) => {
+const getSingleResolution = (state:State, action) => {
   const {payload} = action;
   const {stateName} = action.meta;
   return state.mergeIn([stateName, 'data'], Map({[payload.get('id')]: payload}));
 };
 
-const getResolution = (state:State, action:DispatchedGetActionResolved) => {
+const getResolution = (state:State, action) => {
   const {payload} = action;
   const {stateName} = action.meta;
   return state.setIn([stateName, 'data'], payload);

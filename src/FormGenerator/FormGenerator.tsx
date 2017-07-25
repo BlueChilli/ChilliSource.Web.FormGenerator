@@ -1,19 +1,18 @@
 import React from 'react'; 
 import PropTypes from 'prop-types';
 import { Map, List, Set, fromJS, Iterable } from "immutable";
-import { connect } from "react-redux";
-import {Dispatch} from "redux";
 import Thunk from "redux-thunk";
 import { submitGeneratedForm, OnSubmitSuccess, OnSubmitStart } from "./actions";
 import {FormOptionalProps} from "cs.forms"
-import {camelCase, upperFirst } from "lodash";
+import {camelCase, upperFirst} from "lodash";
+import {connect} from "react-redux";
 
-import {PossibleValues} from "cs.forms";
+import {PossibleValues, Form} from "cs.forms";
 import {BaseReactProps} from "cs.core"
 
 import {getSwaggerModel, getSwaggerParamaters, getPropertiesByDataFormat} from "../../libs/swaggerHelpers";
 
-import { withProps, defaultProps, compose } from "recompose";
+import { withProps, defaultProps, compose, withReducer } from "recompose";
 
 type SubmitGeneratedForm = (ShallowCompare) => undefined
 
@@ -179,6 +178,9 @@ const createApiForFormMethod = (formMethod:string, baseInfo:Map<string, any>, pa
 // TODO: populate this with swagger information
 export default compose<WithPropsFormGen, FormGeneratorProps>(
   connect(mapStateToProps),
+  defaultProps({
+    FormComponent: Form,
+  }),
   withProps((props:ConnectFormGenProps) => {
     const {apiType, formMethod = 'post'} = props;
     const submitType = props.editArgs.size > 0 ? "Update" : "Add";
@@ -212,7 +214,7 @@ export default compose<WithPropsFormGen, FormGeneratorProps>(
       properties: createControlsEdit(roleSafeProperties, mappedEditArgs),
       encType: baseInfo.getIn(['consumes', 0]),
       name,
-      submitGeneratedForm: (formData) => dispatch(submitGeneratedForm(name, formData, api, apiType, stateName, onSubmitStart, onSubmitSuccess, onSubmitError, onSubmitEndAll))
+      submitGeneratedForm: (formData) => submitGeneratedForm(dispatch, name, formData, api, apiType, stateName, onSubmitStart, onSubmitSuccess, onSubmitError, onSubmitEndAll)
     };
   })
 )(FormGenerator)
