@@ -58,7 +58,7 @@ const mapStateToProps = (state, {stateName, pathArgs = Map()}:OwnProps):StatePro
 const mapDispatchToProps = (dispatch, {stateName, apiType, params, apiVerb = "Query", pathArgs = Map<string, string | number>()}:OwnProps):DispatchProps=> {
   return {
     getData: () => {
-       dispatch(getData(stateName, window.client.getIn([apiType, `${apiType}_${apiVerb}`, 'api']), params, pathArgs))
+       getData(dispatch, stateName, window.client.getIn([apiType, `${apiType}_${apiVerb}`, 'api']), params, pathArgs);
     }
   }
 };
@@ -66,7 +66,7 @@ const mapDispatchToProps = (dispatch, {stateName, apiType, params, apiVerb = "Qu
 
 
 // This class is infereing the wrong return so it explicitly stated 
-export function CrudHelperHOC<T extends {}>(WrapperComponent:CrudHelperCreatedChild<T>):React.ComponentClass<OwnProps & T> {
+export function CrudHelperHOC<T extends {} = PassedDownCrudHelperWrapperProps>(WrapperComponent:CrudHelperCreatedChild<T>):React.ComponentClass<OwnProps & T> {
   class InnerCrudHelperWrapper extends React.Component<ConnectedCrudHelperProps & T, {}>{
     componentWillMount() {
       this.props.getData();

@@ -26,7 +26,7 @@ export const dispatchPromiseAction = (dispatch, action, chooseTypeString, ...arg
     dispatch({
       ...action,
       type: chooseTypeString(e.data, action.type) + "_FAILURE",
-      payload: e,
+      payload: e.data,
       error: true
     })
     return Promise.reject(e)
