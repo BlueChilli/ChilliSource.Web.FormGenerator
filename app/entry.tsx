@@ -78,7 +78,7 @@ class UserItem extends React.Component<ListHelperCreateChildrenProps, {}> {
       return (
         <WrappedEmployeeListView
           apiType="Company"
-          apiVerb="Add"
+          apiVerb="Query"
           stateName="Employee"
           params={Map({
             "filter.includes": "availability",
@@ -113,7 +113,7 @@ class Base extends React.Component<{}, {}> {
 
 const rootEl = document.getElementById("app");
 
-fetchSchema(instance, "https://benchon-dev.azurewebsites.net", schema => {
+fetchSchema(instance, "//benchon-dev.azurewebsites.net", schema => {
   window.client = schema;
   ReactDOM.render(
     <Provider store={store}>

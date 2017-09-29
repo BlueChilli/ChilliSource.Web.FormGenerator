@@ -1,22 +1,20 @@
-
 interface BaseAction {
   type: string;
 }
 
-interface FSA<TPayload> extends BaseAction{
-  payload?: TPayload,
-  meta?: any
+interface FSA<TPayload> extends BaseAction {
+  payload?: TPayload;
+  meta?: any;
 }
-
 
 interface Reducers<TState, TPayload> {
-  [key: string]: (state:TState, action: FSA<TPayload>) => TState
+  [key: string]: (state: TState, action: FSA<TPayload>) => TState;
 }
-
-
 
 declare module "redux-immutablejs" {
-  export function createReducer<TState, TPayload>(initialState: TState, reducer: Reducers<TState, TPayload>): any;
-  export function combineReducers (args): any
+  export function createReducer<TState, TPayload>(
+    initialState: TState,
+    reducer: Reducers<TState, TPayload>
+  ): any;
+  export function combineReducers(args: any): any;
 }
-

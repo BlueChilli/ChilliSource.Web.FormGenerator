@@ -1,5 +1,8 @@
-import {CrudHelperHOC, CrudHelperInjectedProps} from "./CrudHelperWrapper";
+import { ComponentType } from "react";
+import { CrudHelperHOC, CrudHelperInjectedProps } from "./CrudHelperWrapper";
 
-export interface ItemHelperInjectedProps extends CrudHelperInjectedProps {};
+export interface ItemHelperInjectedProps extends CrudHelperInjectedProps {}
 
-export function ItemHelperHOC<T> (Component) {return CrudHelperHOC<T>(Component)}
+export function ItemHelperHOC<T>(ItemComponent: ComponentType<any>) {
+  return CrudHelperHOC<T>(ItemComponent);
+}
