@@ -1,7 +1,5 @@
 import { Map } from "immutable";
 
-declare var window: any;
-
 export const getSwaggerModel = (
   apiType: string,
   apiVerb: string

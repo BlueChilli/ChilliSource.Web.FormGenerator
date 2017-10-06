@@ -1,4 +1,9 @@
-import React, { PropTypes, ComponentType, StatelessComponent } from "react";
+import React, {
+  PropTypes,
+  ComponentType,
+  StatelessComponent,
+  Component
+} from "react";
 import { Map, List, Iterable } from "immutable";
 import { isUndefined } from "lodash";
 import { connect, MapDispatchToProps, MapStateToProps } from "react-redux";
@@ -92,28 +97,25 @@ const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = (
 export function CrudHelperHOC<T extends {} = PassedDownCrudHelperWrapperProps>(
   WrapperComponent: CrudHelperCreatedChild<T>
 ) {
-  class InnerCrudHelperWrapper extends React.Component<
-    StateProps & DispatchProps & OwnProps & T,
-    undefined
+  class InnerCrudHelperWrapper extends Component<
+    StateProps & DispatchProps & OwnProps & T
   > {
     componentWillMount() {
       this.props.getData();
     }
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(
+      nextProps: Readonly<StateProps & DispatchProps & OwnProps & T>
+    ) {
       if (!specificShallowEqual(this.props, nextProps)) {
         nextProps.getData();
       }
     }
     render() {
       // TODO fix omit BS
-      const props = omit<any, any>(
-        this.props,
-        "stateName",
-        "apiType",
-        "apiVerb",
-        "params",
-        "pathArgs"
-      );
+      const props = omit<
+        StateProps & DispatchProps & T,
+        Readonly<StateProps & DispatchProps & OwnProps & T>
+      >(this.props, "stateName", "apiType", "apiVerb", "params", "pathArgs");
       return <WrapperComponent {...props} />;
       // return React.createElement<CrudHelperInjectedProps & T>(WrapperComponent, props);
     }

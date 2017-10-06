@@ -1,4 +1,4 @@
-import React, { FormEvent } from "react";
+import React, { FormEvent, Component } from "react";
 import PropTypes from "prop-types";
 import { Map, List, Set, fromJS, Iterable } from "immutable";
 import Thunk from "redux-thunk";
@@ -7,7 +7,7 @@ import { FormOptionalProps } from "cs.forms";
 import { camelCase, upperFirst, flowRight } from "lodash";
 import { connect, Dispatch, MapStateToProps } from "react-redux";
 
-import { PossibleInputValue, Form } from "cs.forms";
+import { PossibleInputValue, Form, EncType } from "cs.forms";
 import { BaseReactProps } from "cs.core";
 
 import {
@@ -20,6 +20,8 @@ import { withProps, defaultProps, compose, withReducer } from "recompose";
 
 type SubmitGeneratedForm = (ShallowCompare: PossibleInputValue) => undefined;
 
+type FormMethod = "post" | "get";
+
 export interface FormGeneratorProps
   extends FormOptionalProps<SubmitGeneratedForm> {
   /** The Swagger key used to retrieve the form schema. You do not need to include the basename or the origin */
@@ -31,7 +33,7 @@ export interface FormGeneratorProps
   /** Provide a custom on submit implementation */
   onSubmit?: (
     event: FormEvent<{}>,
-    ShallowCompare: PossibleInputValue,
+    ShallowCompare: any,
     submitGeneratedForm: SubmitGeneratedForm
   ) => undefined;
   /** Text to display on the submit button */
@@ -46,11 +48,11 @@ export interface FormGeneratorProps
   onSubmitEndAll?: OnSubmitStart;
   /** A map that accepts to properties rename and transform. Rename is a string that replaces the key of the data
      * transform is a function that returns transformed data */
-  mapInputs?: (ShallowCompare: PossibleInputValue) => PossibleInputValue;
+  mapInputs?: (ShallowCompare: any) => any;
   /** Id of the data inside apiType you wish to edit */
   editId?: number;
   /** Arguments to merge into the form as default values */
-  editArgs?: Map<string, PossibleInputValue>;
+  editArgs?: Map<string, any>;
   /** Removes fields not avaliable to the user based on their role */
   roles?: List<string>;
   /** Display avaliable fields */
@@ -58,8 +60,8 @@ export interface FormGeneratorProps
   /** fields to be rendered by the form generator -- Mainly internal usage */
   properties?: List<any> | Map<string, any>;
   /** Type of request for the FormGenerator to make -- default is 'post' */
-  formMethod?: string;
-  FormComponent?: React.ComponentType<{
+  formMethod?: FormMethod;
+  FormComponent?: Component<{
     stateName?: string;
     buttonText?: string;
     onSubmit?: (event?: FormEvent<{}>, formData?: Map<string, any>) => void;
@@ -72,7 +74,7 @@ interface ConnectFormGenProps extends FormGeneratorProps {
 }
 
 interface WithPropsBaseSwaggerInfo extends ConnectFormGenProps {
-  properties: List<any> | Map<string, any>;
+  properties: Map<string, any>;
   baseInfo: Map<string, any>;
   parameters: Map<string, any>;
 }
@@ -152,7 +154,7 @@ const mapStateToProps: MapStateToProps<StateProps, FormGeneratorProps> = (
 };
 
 const createControlsEdit = (
-  properties = Map<string, any>(),
+  properties: Map<string, any> = Map(),
   editArgs = Map()
 ) => {
   return properties.map((value: Map<string, any>, key: string) => {
@@ -187,25 +189,30 @@ const removeFieldsByRole = (
         });
       }
       return true;
-    });
+    }) as Map<string, any>;
   }
   return properties;
 };
 
-const mapInputs = (editArgs, mapInputsFunction = args => args) => {
+const mapInputs = (
+  editArgs: Map<string, any>,
+  mapInputsFunction = (args: Map<string, any>) => args
+) => {
   return mapInputsFunction(editArgs);
 };
 
 const getProperties = (
-  parameters,
-  apiVerb,
-  encType,
-  formMethod
+  parameters: Map<string, any>,
+  apiVerb: string,
+  encType: EncType,
+  formMethod: FormMethod
 ): List<any> | Map<string, any> => {
   if (formMethod === "get") {
-    return parameters.get("query", List()).reduce((reduction, parameter) => {
-      return reduction.set(parameter.get("name"), parameter);
-    }, Map());
+    return parameters
+      .get("query", List())
+      .reduce((reduction: Map<string, any>, parameter: Map<string, any>) => {
+        return reduction.set(parameter.get("name"), parameter);
+      }, Map());
   } else if (encType === "application/json") {
     return parameters.getIn(["body", 0, "schema", "properties"]);
   } else if (encType === "multipart/form-data") {
@@ -218,14 +225,16 @@ const getProperties = (
 };
 
 const createApiForFormMethod = (
-  formMethod: string,
+  formMethod: FormMethod | undefined,
   baseInfo: Map<string, any>,
-  pathArgs
+  pathArgs: Map<string, any>
 ) => {
   if (formMethod === "get") {
-    return data => baseInfo.get("api")(undefined, data.toJS(), pathArgs);
+    return (data: Map<string, any>) =>
+      baseInfo.get("api")(undefined, data.toJS(), pathArgs);
   } else {
-    return data => baseInfo.get("api")(data, undefined, pathArgs);
+    return (data: Map<string, any>) =>
+      baseInfo.get("api")(data, undefined, pathArgs);
   }
 };
 
@@ -277,8 +286,7 @@ export default compose<WithPropsFormGen, FormGeneratorProps>(
     const pathArgs = parameters
       .get("path", Map({}))
       .toMap()
-      .mapEntries(entries => {
-        const value = entries[1];
+      .mapEntries(([key, value]: [string, Map<string, any>]) => {
         return [value.get("name"), props.editArgs.get(value.get("name"))];
       });
     const roleSafeProperties = removeFieldsByRole(properties, props.roles);
@@ -289,7 +297,7 @@ export default compose<WithPropsFormGen, FormGeneratorProps>(
       properties: createControlsEdit(roleSafeProperties, mappedEditArgs),
       encType: baseInfo.getIn(["consumes", 0]),
       name,
-      submitGeneratedForm: formData =>
+      submitGeneratedForm: (formData: Map<string, any>) =>
         submitGeneratedForm(
           dispatch,
           name,

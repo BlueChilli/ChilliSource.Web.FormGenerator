@@ -54,7 +54,10 @@ const chooseSwitchControl = (inputAttributes: Map<string, any>) => {
   }
 };
 
-const displaySwitches = (inputAttributes: Map<string, any>, options) => {
+const displaySwitches = (
+  inputAttributes: Map<string, any>,
+  options: Map<string, any>
+) => {
   const classes = classnames(
     "input-mapper-switch-container",
     inputAttributes.get("className")
@@ -266,11 +269,7 @@ export default compose<WithPropsProps, InputMapperProps & any>(
           const resourceName: string = value.get("resourceName");
           return [
             key,
-            (window as any).client.getIn([
-              resourceName,
-              resourceName + "_Query",
-              "api"
-            ])
+            window.client.getIn([resourceName, resourceName + "_Query", "api"])
           ];
         } else if (
           Iterable.isIterable(value) &&
@@ -286,7 +285,7 @@ export default compose<WithPropsProps, InputMapperProps & any>(
               key,
               value.setIn(
                 ["x-blue-ApiResourceReference", "api"],
-                (window as any).client.getIn([
+                window.client.getIn([
                   resourcePath[0],
                   `${resourcePath[0]}_${resourcePath[1]}`,
                   "api"
@@ -298,7 +297,7 @@ export default compose<WithPropsProps, InputMapperProps & any>(
               key,
               value.setIn(
                 ["x-blue-ApiResourceReference", "api"],
-                (window as any).client.getIn([
+                window.client.getIn([
                   resourceName,
                   resourceName + "_Query",
                   "api"

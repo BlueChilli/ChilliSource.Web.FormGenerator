@@ -50,8 +50,6 @@ instance.interceptors.response.use(
   }
 );
 
-declare const window: any;
-
 const store = createStore(
   combineReducers({
     SessionState: createCrudReducer("SESSION")
